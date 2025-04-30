@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 50px;
+  position: relative;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #bb00ff;
+  width: 250px; /* Adjust size as needed */
+  height: auto;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+}
+
+nav a {
+  color: #ccc;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: #bb00ff;
+}
+
+.menu-icon {
+  display: none;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 50px;
+  height: 90vh;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 15%;
+  width: 500px;
+  height: 500px;
+  background: #bb00ff;
+  border-radius: 50%;
+  filter: blur(100px);
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.hero-text {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-text h2 {
+  font-weight: 400;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #bb00ff;
+}
+
+.hero-text h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.hero-text h1 span {
+  color: #fff;
+}
+
+.hero-text p {
+  font-size: 1rem;
+  max-width: 500px;
+  margin-bottom: 30px;
+  color: #bbb;
+}
+
+.btn {
+  display: inline-block;
+  background: #bb00ff;
+  color: #fff;
+  padding: 12px 30px;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.btn:hover {
+  background: #9900cc;
+}
+
+.hero-image {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-image img {
+  width: 400px;
+  filter: drop-shadow(0 0 20px #bb00ff);
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+@media(max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+  .hero-image img {
+    margin-top: 30px;
+  }
+  nav ul {
+    display: none;
+  }
+  .menu-icon {
+    display: block;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #bb00ff;
+  }
+}
