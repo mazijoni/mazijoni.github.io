@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Projects | Maze Development</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Update the projects section styling to match contact page */
+    .projects-section {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 30px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .projects-section h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .projects-section h1 span {
+      color: #bb00ff;
+    }
+
+    .projects-section p {
+      color: #bbb;
+      max-width: 600px;
+      margin: 0 auto 40px auto;
+      text-align: center;
+    }
+
+    .projects-list {
+      background-color: rgba(30, 30, 30, 0.5);
+      padding: 30px;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+    }
+
+    .project-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 30px 24px;
+      width: 320px;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      transition: all 0.3s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-5px);
+      border-color: #bb00ff;
+      box-shadow: 0 0 0 2px rgba(187, 0, 255, 0.3);
+    }
+
+    /* Add background elements */
+    .bg-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 500px;
+      height: 500px;
+      background: #bb00ff;
+      border-radius: 50%;
+      filter: blur(150px);
+      transform: translate(-50%, -50%);
+      opacity: 0.15;
+      z-index: 0;
+    }
+
+    .bg-shapes {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    /* Adjust logo size */
+    .logo {
+      width: 200px; /* Reduced from default size */
+      height: auto;
+      padding: 10px;
+    }
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Add project card image styles */
+    .project-image {
+      width: 100%;
+      height: 180px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .project-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .project-card:hover .project-image img {
+      transform: scale(1.05);
+    }
+
+    .project-title {
+      color: #bb00ff;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .project-desc {
+      color: #bbb;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .project-link {
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 8px 20px;
+      background: #bb00ff;
+      border-radius: 20px;
+      transition: background 0.2s;
+    }
+
+    .project-link:hover {
+      background: #9900cc;
+    }
+
+    /* Keep existing responsive styles */
+    @media (max-width: 768px) {
+      .projects-section {
+        padding: 20px;
+        margin: 30px auto;
+      }
+
+      .projects-section h1 {
+        font-size: 2.5rem;
+      }
+
+      .projects-list {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Add header with logo -->
+  <header>
+    <div class="logo">
+      <img src="logo_2.png" alt="Maze Development Logo">
+    </div>
+  </header>
+
+  <!-- Add background elements -->
+  <div class="bg-shapes">
+    <div class="bg-shape triangle" style="top: 25%; left: 15%;"></div>
+    <div class="bg-shape square" style="top: 60%; left: 20%;"></div>
+    <div class="bg-shape circle" style="top: 30%; left: 80%;"></div>
+    <div class="bg-shape cross" style="top: 70%; left: 85%;"></div>
+    <div class="bg-shape triangle" style="top: 75%; left: 45%;"></div>
+    <div class="bg-shape circle" style="top: 15%; left: 30%;"></div>
+    <div class="bg-shape square" style="top: 20%; left: 70%;"></div>
+  </div>
+
+  <!-- Add background glow -->
+  <div class="bg-glow"></div>
+
+  <!-- Update main section -->
+  <main>
+    <section class="projects-section">
+      <h1>Our <span>Projects</span></h1>
+      <p>Explore some of the recent work we've done for our clients.</p>
+      <div class="projects-list">
+        <div class="project-card">
+          <div class="project-image">
+            <img src="placeholder.gif" alt="Project Preview">
+          </div>
+          <div class="project-title">Tower Defense</div>
+          <div class="project-desc">A modern web app for managing tasks and boosting productivity, built with React and Firebase.</div>
+          <a href="#" class="project-link" target="_blank">View Project</a>
+        </div>
+        <div class="project-card">
+          <div class="project-image">
+            <img src="placeholder.gif" alt="Project Preview">
+          </div>
+          <div class="project-title">Beta Shop</div>
+          <div class="project-desc">An e-commerce platform with seamless checkout and admin dashboard, using HTML, CSS, and JavaScript.</div>
+          <a href="#" class="project-link" target="_blank">View Project</a>
+        </div>
+        <div class="project-card">
+          <div class="project-image">
+            <img src="placeholder.gif" alt="Project Preview">
+          </div>
+          <div class="project-title">Maze Portfolio</div>
+          <div class="project-desc">A creative portfolio site for designers and developers to showcase their work online.</div>
+          <a href="#" class="project-link" target="_blank">View Project</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 Maze_Development. All rights reserved.
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
