@@ -33,8 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             try {
                 // Construct mailto URL
-                const recipientEmail = 'jonatan.lund.ermesjo@gmail.com'; // Change this to your desired email address
-                const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
+                const mailtoUrl = `mailto:contact@mazedevelopment.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
                 
                 // Open the user's email client
                 window.location.href = mailtoUrl;
