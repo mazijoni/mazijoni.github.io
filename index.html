@@ -199,7 +199,9 @@
     
     /* Slide 1 - Maze Development */
     .slide-1 .slide-visual {
-      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="%23a235ff"/></svg>') no-repeat center center;
+      /* Remove the SVG background */
+      /* background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="%23a235ff"/></svg>') no-repeat center center; */
+      background: none;
       background-size: contain;
       display: flex;
       align-items: center;
@@ -738,7 +740,7 @@
       <button class="slide-cta">Our Services</button>
     </div>
     <div class="slide-visual">
-      <img src="test.png" alt="Code visualization" class="code-visual" width="650">
+      <img src="logo_2.png" alt="Technology stack visualization" height="100%">
     </div>
     
     <div class="scroll-indicator">
@@ -801,60 +803,13 @@
     </div>
   </section>
 
-  <!-- Contact Modal -->
-<div id="contactModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeModal()">&times;</span>
-    <div class="contact-container">
-      <div class="contact-header">
-        <h1>Contact <span>Us</span></h1>
-        <p>Have a project in mind or want to learn more about our services? Send us a message and we'll get back to you as soon as possible.</p>
-      </div>
-
-      <div class="contact-form">
-        <form id="emailForm">
-          <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" class="form-control" required>
-          </div>
-
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" class="form-control" required>
-          </div>
-
-          <div class="form-group">
-            <label for="subject">Subject</label>
-            <input type="text" id="subject" name="subject" class="form-control" required>
-          </div>
-
-          <div class="form-group">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" class="form-control" required></textarea>
-          </div>
-
-          <button type="submit" class="submit-btn">Send Message</button>
-        </form>
-
-        <div class="form-feedback success" id="successMessage">
-          Your message has been sent successfully! We'll get back to you soon.
-        </div>
-
-        <div class="form-feedback error" id="errorMessage">
-          There was an error sending your message. Please try again.
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Add this after the navbar -->
 <div class="menu-overlay">
   <nav class="menu-content">
     <ul>
       <li><a href="index.html">Home</a></li>
       <li><a href="our-projects.html">Our Projects</a></li>
-      <li><a href="contact-us.html" onclick="openModal()">Contact</a></li>
+      <li><a onclick="window.open('contact-us.html', '_blank')">Contact</a></li>
     </ul>
   </nav>
 </div>
