@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .tutorial-container {
+            background: rgba(0,0,0,0.85);
+            padding: 30px 40px;
+            border-radius: 12px;
+            text-align: center;
+            width: 520px;           /* Fixed width */
+            height: 520px;          /* Fixed height */
+            max-width: 100vw;
+            max-height: 100vh;
+            color: #fff;
+            box-shadow: 0 0 30px #0091ff55;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .tutorial-video {
+            width: 440px;           /* Fixed width */
+            height: 250px;          /* Fixed height */
+            border-radius: 8px;
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+        .tutorial-controls {
+            margin-top: 20px;
+        }
+        .tutorial-controls button {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tutorial-container">
+        <h1>Tower Defense Tutorial</h1>
+        <video id="tutorial-video" class="tutorial-video" controls autoplay loop>
+            <source src="videos/tutorial1.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div id="tutorial-text">
+            <p>Welcome! Learn the basics of the game before you start.</p>
+        </div>
+        <div class="tutorial-controls">
+            <button id="prev-btn" disabled>Previous</button>
+            <button id="next-btn">Next</button>
+            <button id="skip-btn">Skip Tutorial</button>
+        </div>
+    </div>
+    <script>
+        // Tutorial steps (add more as needed)
+        const steps = [
+            {
+                video: "images/building-tutorial.mp4",
+                text: "Use the hotbar to select and place buildings."
+            },
+            {
+                video: "images/resources-tutorial.mp4",
+                text: "Collect resources by clicking on trees and rocks."
+            },
+            {
+                video: "images/night-tutorial.mp4",
+                text: "Defend your castle from enemies at night!"
+            }
+        ];
+        let currentStep = 0;
+
+        const video = document.getElementById('tutorial-video');
+        const text = document.getElementById('tutorial-text');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const skipBtn = document.getElementById('skip-btn');
+
+        function updateTutorial() {
+            video.src = steps[currentStep].video;
+            video.load();
+            video.play();
+            text.innerHTML = `<p>${steps[currentStep].text}</p>`;
+            prevBtn.disabled = currentStep === 0;
+            nextBtn.textContent = currentStep === steps.length - 1 ? "Start Game" : "Next";
+        }
+
+        prevBtn.onclick = () => {
+            if (currentStep > 0) {
+                currentStep--;
+                updateTutorial();
+            }
+        };
+        nextBtn.onclick = () => {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                updateTutorial();
+            } else {
+                window.location.href = "game.html";
+            }
+        };
+        skipBtn.onclick = () => {
+            window.location.href = "game.html";
+        };
+
+        updateTutorial();
+    </script>
+</body>
+</html>

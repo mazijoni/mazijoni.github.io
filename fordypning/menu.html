@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Menu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Background Video -->
+    <video autoplay muted loop id="bg-video" style="position:fixed;z-index:-2;width:100vw;height:100vh;object-fit:cover;left:0;top:0;">
+        <source src="videos/menu_bg.mp4" type="video/mp4">
+    </video>
+
+    <!-- Main Menu -->
+    <div id="menu-container" class="active">
+        <h1 id="game-title">Tower Defense</h1>
+        <button class="menu-button" id="start-game">New Game</button>
+        <button class="menu-button" id="options">Options</button>
+        <button class="menu-button" id="credits">Credits</button>
+    </div>
+
+    <!-- Game Canvas -->
+    <div id="game-container" style="display: none;">
+        <canvas id="game-canvas"></canvas>
+    </div>
+
+    <script>
+        // Redirect to the tutorial page when "New Game" is clicked
+        document.getElementById('start-game').addEventListener('click', function() {
+            window.location.href = 'tutorial.html'; // Go to tutorial first
+        });
+
+        // Options and Credits functionality
+        document.getElementById('options').addEventListener('click', function() {
+            alert('Options menu coming soon!');
+        });
+
+        document.getElementById('credits').addEventListener('click', function() {
+            window.location.href = 'credits.html'; // Adjust the path if necessary
+        });
+    </script>
+</body>
+</html>

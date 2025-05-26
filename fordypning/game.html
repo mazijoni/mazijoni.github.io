@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://unpkg.com/three@0.150.1/examples/js/objects/Water.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        canvas { 
+            display: block; 
+        }
+
+        /* Inventory Display */
+        #inventory-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6));
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            border: 2px solid rgba(121, 197, 255, 0.3);
+            box-shadow: 0 0 15px rgba(0, 145, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Hotbar Styling */
+        #hotbar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6));
+            padding: 15px;
+            border-radius: 15px;
+            display: flex;
+            gap: 15px;
+            border: 2px solid rgba(121, 197, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 145, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        #hotbar button {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(121, 197, 255, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            width: 80px;
+            height: 80px;
+            transition: all 0.3s ease;
+            background-repeat: no-repeat;
+            background-size: 80%;
+            background-position: center;
+        }
+
+        #hotbar button:hover,
+        #hotbar button.selected {
+            border: 3px solid #79c5ff;
+            box-shadow: 0 0 18px 4px #0091ff;
+            transform: scale(1.1);
+            z-index: 2;
+        }
+
+        /* Tooltip Styling */
+        #tooltip {
+            position: absolute;
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7));
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            pointer-events: none;
+            border: 1px solid rgba(121, 197, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 145, 255, 0.2);
+            backdrop-filter: blur(5px);
+            display: none; /* Hide by default */
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        #tooltip.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Return to Menu Button */
+        #return-to-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6));
+            color: white;
+            border: 2px solid rgba(121, 197, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 145, 255, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        #return-to-menu:hover {
+            background: linear-gradient(145deg, rgba(0, 145, 255, 0.2), rgba(0, 145, 255, 0.1));
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 145, 255, 0.4);
+        }
+
+        /* Not Enough Resources Popup */
+        .fade-popup {
+            display: none;
+            position: fixed;
+            top: 0px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-40px);
+            background: linear-gradient(145deg, #ff3838, #ff6b6b);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1.2em;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 0 25px rgba(255, 82, 82, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        .fade-popup.show {
+            display: block;
+            animation: slideInOut 3s ease forwards;
+        }
+
+        @keyframes slideInOut {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-100%);
+            }
+            15% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(40px);
+            }
+            85% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(40px);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-100%);
+            }
+        }
+
+        /* Game Over Screen */
+        #endgame-overlay {
+            display: none;
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            font-size: 2.5em;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        #endgame-overlay button {
+            margin-top: 30px;
+            font-size: 0.5em;
+            padding: 15px 40px;
+            border-radius: 12px;
+            border: 2px solid rgba(121, 197, 255, 0.3);
+            background: linear-gradient(145deg, #0091ff, #79c5ff);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 145, 255, 0.3);
+        }
+
+        #endgame-overlay button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(0, 145, 255, 0.5);
+        }
+
+        /* Individual button backgrounds */
+        #build-castle {
+            background-image: url('images/Castle.png');
+        }
+
+        #build-wall_straight {
+            background-image: url('images/Wall.png');
+        }
+
+        #build-wall_door {
+            background-image: url('images/Wall-Door.png');
+        }
+
+        #build-wall_corner {
+            background-image: url('images/Wall-corner.png');
+        }
+
+        #build-wall_corner_2 {
+            background-image: url('images/Wall-corner-2.png');
+        }
+
+        #build-tower {
+            background-image: url('images/Tower.png');
+        }
+    </style>
+</head>
+<body>
+    <div id="inventory-display">
+        Wood: 50 | Stone: 50 | Diamond: 0
+    </div>
+    <div id="hotbar">
+        <button id="build-castle" data-cost="wood:50,stone:50"></button>
+        <button id="build-wall_straight" data-cost="stone:20"></button>
+        <button id="build-wall_door" data-cost="stone:15,wood:5"></button>
+        <button id="build-wall_corner" data-cost="stone:12"></button>
+        <button id="build-wall_corner_2" data-cost="stone:12"></button>
+        <button id="build-tower" data-cost="wood:30,stone:20,diamond:5"></button>
+    </div>
+    <button id="return-to-menu" onClick="returnToMenuButton()">Return to Menu</button>
+
+    <!-- Tooltip for displaying button info -->
+    <div id="tooltip"></div>
+
+    <!-- Endgame overlay -->
+    <div id="endgame-overlay" style="
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.85);
+        color: white;
+        font-family: Arial, sans-serif;
+        font-size: 2em;
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+    ">
+        <div>Game Over</div>
+        <button onclick="window.location.reload()" style="
+            margin-top: 30px;
+            font-size: 1em;
+            padding: 10px 30px;
+            border-radius: 8px;
+            border: none;
+            background: #79c5ff;
+            color: #222;
+            cursor: pointer;
+        ">Restart</button>
+    </div>
+
+    <!-- Not Enough Resources Popup -->
+    <div id="not-enough-resources-popup" class="fade-popup">
+        Not enough resources to build!
+    </div>
+
+    <!-- Game Help Video -->
+    <video id="game-help-video" style="position:fixed;bottom:20px;right:20px;width:220px;height:auto;z-index:1001;border-radius:10px;box-shadow:0 0 10px #0091ff;" autoplay muted loop>
+        <source src="images/game-help.mp4" type="video/mp4">
+    </video>
+
+    <script>
+        // Tooltip code...
+        const tooltip = document.getElementById('tooltip');
+        const buttons = document.querySelectorAll('#hotbar button');
+
+        buttons.forEach(button => {
+            button.addEventListener('mouseover', (event) => {
+                const name = button.id.replace('build-', '').replace(/_/g, ' ');
+                const cost = button.getAttribute('data-cost');
+                tooltip.textContent = `${name} - Cost: ${cost}`;
+                tooltip.classList.add('visible');
+            });
+
+            button.addEventListener('mousemove', (event) => {
+                tooltip.style.left = `${event.clientX + 10}px`;
+                tooltip.style.top = `${event.clientY + 10}px`;
+            });
+
+            button.addEventListener('mouseout', () => {
+                tooltip.classList.remove('visible');
+            });
+
+            // Prevent interaction with game layer below
+            button.addEventListener('mousedown', (event) => {
+                event.stopPropagation();
+            });
+
+            // Show which button is selected
+            button.addEventListener('click', () => {
+                if (button.classList.contains('selected')) {
+                    button.classList.remove('selected');
+                } else {
+                    buttons.forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                }
+            });
+        });
+
+        // Game over handling (placeholder)
+        function gameOver() {
+            const overlay = document.getElementById('endgame-overlay');
+            overlay.style.display = 'flex';
+        }
+
+        function showNotEnoughResourcesPopup() {
+            const popup = document.getElementById('not-enough-resources-popup');
+            popup.classList.add('show');
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 3000);
+        }
+
+        // Test the popup (you can remove this after testing)
+        // showNotEnoughResourcesPopup();
+        
+    </script>
+    <script src="game.js"></script>
+</body>
+</html>

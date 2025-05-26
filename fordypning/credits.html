@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credits</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="credits-container" class="active">
+        <h1>Credits</h1>
+        <p>Game Design: Jonatan</p>
+        <p>Art and Assets: Jonatan</p>
+        <p>Programming: Jonatan / Copilot</p>
+        <p>3D System library: <a href="https://threejs.org" target="_blank">Three.js</a></p>
+        <p>Textures: <a href="https://www.blenderkit.com" target="_blank">BlenderKit</a></p>
+        <p>Publisher: <a href="https://www.joni.no" target="_blank">Maze_Development</a></p>
+        <button id="back-to-menu" class="menu-button">Back to Menu</button>
+    </div>
+
+    <script>
+        // Navigate back to the main menu
+        document.getElementById('back-to-menu').addEventListener('click', function() {
+            window.location.href = 'menu.html'; // Adjust the path if necessary
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+/* General body styling */
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Blurred background image */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0f1e url('images/untitled.png') no-repeat center center fixed;
+    background-size: cover;
+    filter: blur(7px); /* Apply blur effect */
+    z-index: -1; /* Place it behind the content */
+}
+
+/* Login and Sign-Up Containers */
+#login-container, #signup-container, #menu-container {
+    display: none;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    width: 300px;
+}
+
+#login-container.active, #signup-container.active, #menu-container.active {
+    display: block;
+}
+
+/* Input fields */
+input[type="text"], input[type="password"] {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 80%;
+    border: none;
+    border-radius: 5px;
+    background: #1e2a47;
+    color: white;
+    font-size: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+input[type="text"]::placeholder, input[type="password"]::placeholder {
+    color: #aaa;
+}
+
+/* Buttons */
+button {
+    padding: 10px 20px;
+    margin: 10px auto;
+    border: none;
+    border-radius: 5px;
+    background: #0091ff;
+    color: black;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+button:hover {
+    background: #0091ff;
+    transform: scale(1.05);
+}
+
+/* Headings */
+h1 {
+    font-size: 2rem;
+    color: #79c5ff;
+    text-shadow: 0 0 10px #0091ff, 0 0 20px #0091ff;
+    margin-bottom: 20px;
+}
+
+#menu-container {
+    position: relative;
+    text-align: center;
+    background: rgba(0, 0, 0, 0); /* Semi-transparent background */
+    padding: 20px 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px); /* Apply blur effect */
+    -webkit-backdrop-filter: blur(10px); /* For Safari support */
+}
+
+#game-title {
+    font-size: 3rem;
+    color: #9dd5ff;
+    text-shadow: 0 0 10px #0091ff, 0 0 20px #0091ff;
+    margin-bottom: 20px;
+}
+
+.menu-button {
+    display: block;
+    width: 200px;
+    margin: 10px auto;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    color: white;
+    background: linear-gradient(145deg, #1e2a47, #162035);
+    border: 2px solid #1e2a47;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.menu-button:hover {
+    background: #79c5ff;
+    color: black;
+    border: 2px solid #0091ff;
+    box-shadow: 0 0 10px #0091ff, 0 0 20px #0091ff;
+    transform: scale(1.05);
+}
+
+/* Styling for the Publisher section */
+#credits-container p a {
+    color: #ffffff; /* Gold color for the link */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+#credits-container p a:hover {
+    color: #79c5ff; /* Slightly darker gold on hover */
+    text-shadow: 0 0 10px #0091ff, 0 0 20px #0091ff; /* Glow effect */
+}
