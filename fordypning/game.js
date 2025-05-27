@@ -41,7 +41,7 @@ const modelPaths = [
 ];
 
 let isDay = true; // Start with day
-const DAY_LENGTH = 10000; // Length of day in milliseconds
+const DAY_LENGTH = 100000; // Length of day in milliseconds
 const NIGHT_LENGTH = 100000; // Length of night in milliseconds
 
 function interpolateColor(color1, color2, factor) {
