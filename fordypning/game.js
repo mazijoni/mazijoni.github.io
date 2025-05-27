@@ -449,8 +449,8 @@ window.addEventListener('mousedown', (event) => {
 });
 
 const inventory = {
-    [RESOURCE_TREE]: 50,
-    [RESOURCE_ROCK]: 50,
+    [RESOURCE_TREE]: 20,
+    [RESOURCE_ROCK]: 20,
     [RESOURCE_DIAMOND]: 0
 };
 
