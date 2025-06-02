@@ -107,6 +107,8 @@ const createScene = function () {
     directionBall.material = new BABYLON.StandardMaterial("ballMat", scene);
     directionBall.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Red
 
+    let wasSpacePressed = false; // Add this above your onBeforeRenderObservable
+
     scene.onBeforeRenderObservable.add(() => {
         let moved = false;
         let moveX = 0;
@@ -140,10 +142,12 @@ const createScene = function () {
 
         // Jumping logic (spacebar)
         // Only allow jump if on ground (verticalVelocity == 0)
-        if (inputMap[" "] && !isJumping && Math.abs(verticalVelocity) < 0.001) {
+        const spacePressed = !!inputMap[" "];
+        if (spacePressed && !wasSpacePressed && !isJumping && Math.abs(verticalVelocity) < 0.001) {
             verticalVelocity = jumpStrength;
             isJumping = true;
         }
+        wasSpacePressed = spacePressed;
 
         // Apply gravity
         verticalVelocity += gravity;
