@@ -263,6 +263,32 @@ createItem("item2", new BABYLON.Vector3(-2, 0.9, 1));
         }
     });
 
+    // Allow clicking on items to pick them up if close enough
+    canvas.addEventListener("pointerdown", function(evt) {
+        const pickResult = scene.pick(scene.pointerX, scene.pointerY);
+        if (pickResult.hit && pickResult.pickedMesh) {
+            const mesh = pickResult.pickedMesh;
+            // Check if this mesh is in the items array
+            const itemIndex = items.indexOf(mesh);
+            if (itemIndex !== -1) {
+                // Check distance to player
+                const dist = BABYLON.Vector3.Distance(player.position, mesh.position);
+                if (dist < 1) {
+                    // Add to first empty inventory slot
+                    const emptySlot = inventory.findIndex(slot => slot === null);
+                    if (emptySlot !== -1) {
+                        inventory[emptySlot] = mesh.itemName;
+                        updateInventoryUI();
+                        mesh.dispose();
+                        items.splice(itemIndex, 1);
+                    } else {
+                        // Optionally, show "Inventory Full" message
+                    }
+                }
+            }
+        }
+    });
+
     return { scene, player };
 };
 
@@ -289,11 +315,16 @@ const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("U
 
 // Helper to create a name tag above a mesh
 function addNameTag(mesh, name) {
+    // Dynamically set width based on name length (min 100px, max 400px)
+    let baseWidth = 100;
+    let extra = Math.max(0, name.length - 10) * 12; // 12px per extra char after 10
+    let width = Math.min(baseWidth + extra, 400);
+
     const rect = new BABYLON.GUI.Rectangle();
     rect.background = "rgba(0,0,0,0.5)";
     rect.height = "30px";
     rect.alpha = 0.8;
-    rect.width = "100px";
+    rect.width = width + "px";
     rect.cornerRadius = 10;
     rect.thickness = 0;
     rect.zIndex = 100;
@@ -303,6 +334,10 @@ function addNameTag(mesh, name) {
     label.text = name;
     label.color = "white";
     label.fontSize = 18;
+    label.textWrapping = true;
+    label.resizeToFit = true;
+    label.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    label.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
     rect.addControl(label);
 
     rect.linkWithMesh(mesh);
@@ -334,7 +369,7 @@ function createRemotePlayer(scene, peerId, remoteNickname) {
     // Add name tag
     // Show the host's nickname if peerId is "host"
     if (peerId === "host") {
-        addNameTag(mesh, `${nickname} (Host)`);
+        addNameTag(mesh, `${nickname} 👑`);
     } else {
         addNameTag(mesh, remoteNickname || peerId);
     }

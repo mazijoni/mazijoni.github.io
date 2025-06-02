@@ -269,7 +269,7 @@ function generateHexGrid(rows, cols) {
 
 
     // Position the camera higher and slightly forward
-    camera.position.set(0, 10, 10); // Raise it higher and push forward
+    camera.position.set(0, 30, 10); // Raise it higher and push forward
     camera.lookAt(0, 0, 0); // Make it look at the center
 
     // Slightly tilt the camera downward
