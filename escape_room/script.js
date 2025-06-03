@@ -443,7 +443,8 @@ if (window.location.search.startsWith("?server=")) {
                 if (remotePlayers[conn.peer].nameTag) {
                     remotePlayers[conn.peer].nameTag.children[0].text = remoteNickname;
                 }
-                setTimeout(updateRoomInfoUI, 100); // update after nickname set
+                // Move updateRoomInfoUI() here, after mesh and nameTag are ready
+                setTimeout(updateRoomInfoUI, 100);
                 return;
             }
             // Update this remote player's mesh
@@ -550,6 +551,7 @@ if (window.location.search.startsWith("?server=")) {
                         remotePlayers[data.peerId].dispose();
                         delete remotePlayers[data.peerId];
                     }
+                    setTimeout(updateRoomInfoUI, 100);
                     return;
                 }
                 if (!remotePlayers[data.peerId]) {
@@ -572,6 +574,8 @@ if (window.location.search.startsWith("?server=")) {
                 if (mesh.nameTag && data.nickname) {
                     mesh.nameTag.children[0].text = data.nickname;
                 }
+                // Move updateRoomInfoUI() here, after mesh and nameTag are ready
+                setTimeout(updateRoomInfoUI, 100);
             }
         });
     });
