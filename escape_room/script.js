@@ -514,7 +514,7 @@ if (window.location.search.startsWith("?server=")) {
                         z: player.position.z
                     },
                     rotationY: player.rotation.y,
-                    nickname: nickname + " (Host)" // <-- send host's nickname
+                    nickname: nickname + " 👑" // <-- send host's nickname
                 });
             }
         }
@@ -538,7 +538,7 @@ if (window.location.search.startsWith("?server=")) {
 
         // When creating remote player mesh for the host
         if (!remotePlayers["host"]) {
-            remotePlayers["host"] = createRemotePlayer(scene, "host", `${nickname} (Host)`);
+            remotePlayers["host"] = createRemotePlayer(scene, "host", `${nickname} 👑`);
         }
 
         serverConn.on("data", (data) => {
@@ -607,26 +607,49 @@ function updateRoomInfoUI() {
     const code = getServerCode();
     document.getElementById("roomCodeLabel").textContent = code ? `Room: ${code}` : "Room: ...";
     const playerList = document.getElementById("playerList");
-    // Collect all player names (local + remotes)
-    let names = [nickname];
+    let names = [];
+
+    // Always add local player (host or client)
+    if (window.location.search.startsWith("?server=")) {
+        names.push(nickname + " 👑");
+    } else {
+        // On client, try to find the host in remotePlayers
+        for (const id in remotePlayers) {
+            if (id === "host" && remotePlayers[id] && remotePlayers[id].nameTag) {
+                const label = remotePlayers[id].nameTag.children[0];
+                if (label && label.text) {
+                    names.push(label.text);
+                }
+            }
+        }
+        names.push(nickname); // Add self
+    }
+
+    // Add all remote players (skip host if already added)
     for (const id in remotePlayers) {
         if (remotePlayers[id] && remotePlayers[id].nameTag) {
-            // Try to get the name from the nameTag label
             const label = remotePlayers[id].nameTag.children[0];
-            if (label && label.text) names.push(label.text);
-            else names.push(id);
+            if (label && label.text) {
+                // Avoid duplicate host
+                if (!(window.location.search.startsWith("?server=") && label.text === nickname + " 👑")) {
+                    // Avoid duplicate self
+                    if (label.text !== nickname) {
+                        names.push(label.text);
+                    }
+                }
+            } else {
+                names.push(id);
+            }
         }
     }
+
     // Remove duplicates and show
     playerList.innerHTML = "";
     [...new Set(names)].forEach(name => {
         const li = document.createElement("li");
-        // Add crown to host's nickname
-        if (
-            (window.location.search.startsWith("?server=") && name === nickname) ||
-            (window.location.search.startsWith("?join=") && name.includes("(Host)"))
-        ) {
-            li.textContent = name.replace(/ ?(\(Host\))?$/, '') + " 👑";
+        // Add crown if host
+        if (name.endsWith("👑")) {
+            li.textContent = name;
         } else {
             li.textContent = name;
         }
