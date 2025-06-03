@@ -113,6 +113,8 @@ const createScene = function () {
     let wasSpacePressed = false; // Add this above your onBeforeRenderObservable
 
     scene.onBeforeRenderObservable.add(() => {
+        const deltaTime = scene.getEngine().getDeltaTime() / 1000; // seconds
+
         let moved = false;
         let moveX = 0;
         let moveZ = 0;
@@ -141,19 +143,18 @@ const createScene = function () {
             moveZ /= length;
         }
 
-        const speed = 0.08;
+        const speed = 0.08 * (deltaTime * 60); // scale to ~60fps baseline
 
         // Jumping logic (spacebar)
-        // Only allow jump if on ground (verticalVelocity == 0)
         const spacePressed = !!inputMap[" "];
         if (spacePressed && !wasSpacePressed && !isJumping && Math.abs(verticalVelocity) < 0.001) {
-            verticalVelocity = jumpStrength;
+            verticalVelocity = jumpStrength * (deltaTime * 60); // scale jump
             isJumping = true;
         }
         wasSpacePressed = spacePressed;
 
         // Apply gravity
-        verticalVelocity += gravity;
+        verticalVelocity += gravity * (deltaTime * 60);
 
         // Save previous Y to check if landed
         const prevY = player.position.y;
@@ -175,7 +176,7 @@ const createScene = function () {
             let delta = targetY - currentY;
             // Keep shortest path
             delta = ((delta + Math.PI) % (2 * Math.PI)) - Math.PI;
-            player.rotation.y += delta * 0.08;
+            player.rotation.y += delta * 0.08 * (deltaTime * 60);
         }
 
         // Move the direction ball to the front of the player
