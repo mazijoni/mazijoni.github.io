@@ -57,6 +57,25 @@
             <button id="joinStartBtn" style="font-size:1.2em;">Join Game</button>
         </div>
     </div>
+    <div id="roomInfo" style="
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: rgba(30,30,30,0.8);
+        color: #fff;
+        padding: 12px 18px;
+        border-radius: 10px;
+        font-family: sans-serif;
+        z-index: 100;
+        min-width: 180px;
+        pointer-events: none;
+    ">
+        <div id="roomCodeLabel" style="font-weight:bold;">Room: ...</div>
+        <div style="margin-top:8px;font-size:15px;">
+            <span style="font-weight:bold;">Players:</span>
+            <ul id="playerList" style="margin:0;padding-left:18px;"></ul>
+        </div>
+    </div>
     <script src="script.js"></script>
     <script>
 if (!window.location.search.includes("server") && !window.location.search.includes("join")) {

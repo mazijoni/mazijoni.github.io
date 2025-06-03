@@ -443,6 +443,7 @@ if (window.location.search.startsWith("?server=")) {
                 if (remotePlayers[conn.peer].nameTag) {
                     remotePlayers[conn.peer].nameTag.children[0].text = remoteNickname;
                 }
+                setTimeout(updateRoomInfoUI, 100); // update after nickname set
                 return;
             }
             // Update this remote player's mesh
@@ -478,6 +479,7 @@ if (window.location.search.startsWith("?server=")) {
         });
 
         conn.on('close', () => {
+            setTimeout(updateRoomInfoUI, 100);
             // Remove mesh when client disconnects
             if (remotePlayers[conn.peer]) {
                 if (remotePlayers[conn.peer].nameTag) {
@@ -597,5 +599,80 @@ if (window.location.search.startsWith("?server=")) {
         if (peer) {
             peer.destroy();
         }
+    });
+}
+
+// --- Room info UI update ---
+function updateRoomInfoUI() {
+    const code = getServerCode();
+    document.getElementById("roomCodeLabel").textContent = code ? `Room: ${code}` : "Room: ...";
+    const playerList = document.getElementById("playerList");
+    // Collect all player names (local + remotes)
+    let names = [nickname];
+    for (const id in remotePlayers) {
+        if (remotePlayers[id] && remotePlayers[id].nameTag) {
+            // Try to get the name from the nameTag label
+            const label = remotePlayers[id].nameTag.children[0];
+            if (label && label.text) names.push(label.text);
+            else names.push(id);
+        }
+    }
+    // Remove duplicates and show
+    playerList.innerHTML = "";
+    [...new Set(names)].forEach(name => {
+        const li = document.createElement("li");
+        // Add crown to host's nickname
+        if (
+            (window.location.search.startsWith("?server=") && name === nickname) ||
+            (window.location.search.startsWith("?join=") && name.includes("(Host)"))
+        ) {
+            li.textContent = name.replace(/ ?(\(Host\))?$/, '') + " 👑";
+        } else {
+            li.textContent = name;
+        }
+        playerList.appendChild(li);
+    });
+}
+
+// Call once at start
+updateRoomInfoUI();
+
+// Call after any player joins/leaves or nickname changes
+// For host:
+if (window.location.search.startsWith("?server=")) {
+    // ...existing code...
+    peer.on('connection', (conn) => {
+        // ...existing code...
+        conn.on("data", (data) => {
+            // ...existing code...
+            if (data.nickname) {
+                // ...existing code...
+                setTimeout(updateRoomInfoUI, 100); // update after nickname set
+                return;
+            }
+            // ...existing code...
+        });
+        conn.on('close', () => {
+            setTimeout(updateRoomInfoUI, 100);
+            // ...existing code...
+        });
+    });
+    // ...existing code...
+    scene.onBeforeRenderObservable.add(() => {
+        updateRoomInfoUI();
+        // ...existing code...
+    });
+} else if (window.location.search.startsWith("?join=")) {
+    // ...existing code...
+    peer.on('open', (id) => {
+        // ...existing code...
+        serverConn.on("data", (data) => {
+            // ...existing code...
+            setTimeout(updateRoomInfoUI, 100);
+        });
+    });
+    scene.onBeforeRenderObservable.add(() => {
+        updateRoomInfoUI();
+        // ...existing code...
     });
 }
