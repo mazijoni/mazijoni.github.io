@@ -239,8 +239,8 @@ function createItem(name, position) {
     item.itemName = name; // Store name for inventory
     items.push(item);
 }
-createItem("item1", new BABYLON.Vector3(3, 0.9, 3));
-createItem("item2", new BABYLON.Vector3(-2, 0.9, 1));
+createItem("Key", new BABYLON.Vector3(3, 0.9, 3));
+createItem("Gun", new BABYLON.Vector3(-2, 0.9, 1));
 
     scene.onBeforeRenderObservable.add(() => {
         // ...existing movement code...
@@ -290,6 +290,29 @@ createItem("item2", new BABYLON.Vector3(-2, 0.9, 1));
                     }
                 }
             }
+        }
+    });
+
+    // 1. Create a key model for the hand (after player is created)
+    const handKey = BABYLON.MeshBuilder.CreateBox("handKey", { size: 0.2 }, scene);
+    handKey.material = new BABYLON.StandardMaterial("handKeyMat", scene);
+    handKey.material.diffuseColor = new BABYLON.Color3(1, 1, 0); // Yellow
+    handKey.isVisible = false;
+
+    // 2. Update handKey position and visibility every frame
+    scene.onBeforeRenderObservable.add(() => {
+        // Check if selected inventory slot contains "Key"
+        if (inventory[selectedSlot] === "Key") {
+            handKey.isVisible = true;
+            // Position the key in front of the player (as if in hand)
+            handKey.position = player.position.add(new BABYLON.Vector3(
+                Math.sin(player.rotation.y) * 0.5 + Math.cos(player.rotation.y) * 0.3,
+                0.7, // hand height
+                Math.cos(player.rotation.y) * 0.5 - Math.sin(player.rotation.y) * 0.3
+            ));
+            handKey.rotation.y = player.rotation.y;
+        } else {
+            handKey.isVisible = false;
         }
     });
 
