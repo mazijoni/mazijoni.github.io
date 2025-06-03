@@ -63,7 +63,10 @@ const createScene = function () {
 
     // Apply texture to the ground
     const groundMaterial = new BABYLON.StandardMaterial("groundMat", scene);
-    groundMaterial.diffuseTexture = new BABYLON.Texture("assets/textures/texture_01.png", scene);
+    groundMaterial.diffuseTexture = new BABYLON.Texture("assets/textures/texture_purple.png", scene);
+    // Downscale the texture (repeat it more times)
+    groundMaterial.diffuseTexture.uScale = 4;
+    groundMaterial.diffuseTexture.vScale = 4;
     ground.material = groundMaterial;
 
     // Add a cube

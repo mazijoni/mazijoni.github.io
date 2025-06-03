@@ -46,7 +46,10 @@
         <button id="hostBtn" style="font-size:2em;margin:10px;">Host (Server)</button>
         <button id="joinBtn" style="font-size:2em;margin:10px;">Join (Client)</button>
         <div id="hostCodeDiv" style="display:none;flex-direction:column;align-items:center;">
-            <input id="hostCodeInput" placeholder="Enter a room code" style="font-size:1.5em;margin:10px;" />
+            <div style="display:flex;align-items:center;">
+                <input id="hostCodeInput" placeholder="Enter a room code" style="font-size:1.5em;margin:10px;" />
+                <button id="generateCodeBtn" title="Generate random code" style="font-size:1.2em;margin-left:5px;">🔄</button>
+            </div>
             <button id="hostStartBtn" style="font-size:1.2em;">Start Hosting</button>
         </div>
         <div id="joinCodeDiv" style="display:none;flex-direction:column;align-items:center;">
@@ -90,6 +93,17 @@ if (!window.location.search.includes("server") && !window.location.search.includ
             localStorage.setItem("nickname", nick);
             window.location.search = "?join=" + encodeURIComponent(code);
         }
+    };
+    document.getElementById("generateCodeBtn").onclick = function() {
+        function randomCode(length) {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let code = "";
+            for (let i = 0; i < length; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+        document.getElementById("hostCodeInput").value = randomCode(6);
     };
 } else {
     document.getElementById("startMenu").style.display = "none";
