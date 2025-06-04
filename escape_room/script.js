@@ -95,7 +95,7 @@ const createScene = function () {
     let isJumping = false;
     let verticalVelocity = 0;
     const gravity = -0.01; // Smoother gravity for jump
-    const jumpStrength = 0.15; // Higher jump
+    const jumpStrength = 0.20; // Higher jump
 
     window.addEventListener("keydown", function (evt) {
         inputMap[evt.key.toLowerCase()] = true;
@@ -148,7 +148,7 @@ const createScene = function () {
         // Jumping logic (spacebar)
         const spacePressed = !!inputMap[" "];
         if (spacePressed && !wasSpacePressed && !isJumping && Math.abs(verticalVelocity) < 0.001) {
-            verticalVelocity = jumpStrength * (deltaTime * 60); // scale jump
+            verticalVelocity = jumpStrength; // do NOT scale by deltaTime
             isJumping = true;
         }
         wasSpacePressed = spacePressed;
@@ -421,6 +421,7 @@ createItem("Gun", new BABYLON.Vector3(-2, 0.9, 1));
     fovMesh.isPickable = false;
     fovMesh.isVisible = false;
     fovMesh.rotation.x = Math.PI / 2;
+    fovMesh.rotation.y = Math.PI / 2; // Rotate FOV display by 90 degrees
 
     // Show/hide FOV on X press
     let fovVisible = false;
@@ -439,7 +440,7 @@ createItem("Gun", new BABYLON.Vector3(-2, 0.9, 1));
         // Update FOV mesh position and rotation
         fovMesh.position = aiEnemy.position.clone();
         fovMesh.position.y += 0.01; // Slightly above ground
-        fovMesh.rotation.y = aiEnemy.rotation.y;
+        fovMesh.rotation.y = aiEnemy.rotation.y + Math.PI / -4; // <-- Add 90 degree offset
 
         // Vector from AI to player
         const toPlayer = player.position.subtract(aiEnemy.position);
@@ -939,9 +940,3 @@ if (window.location.search.startsWith("?server=")) {
         // ...existing code...
     });
 }
-
-// Only run AI logic if host
-scene.onBeforeRenderObservable.add(() => {
-    // --- AI logic here ---
-    // (all your aiEnemy movement, FOV, chasing, roaming, etc)
-});
