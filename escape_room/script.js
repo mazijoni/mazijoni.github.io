@@ -736,7 +736,16 @@ if (window.location.search.startsWith("?server=")) {
                         z: player.position.z
                     },
                     rotationY: player.rotation.y,
-                    nickname: nickname + " 👑" // <-- send host's nickname
+                    nickname: nickname + " 👑",
+                    // --- Add this for enemy sync ---
+                    aiEnemy: {
+                        position: {
+                            x: aiEnemy.position.x,
+                            y: aiEnemy.position.y,
+                            z: aiEnemy.position.z
+                        },
+                        rotationY: aiEnemy.rotation.y
+                    }
                 });
             }
         }
@@ -797,6 +806,12 @@ if (window.location.search.startsWith("?server=")) {
                 }
                 // Move updateRoomInfoUI() here, after mesh and nameTag are ready
                 setTimeout(updateRoomInfoUI, 100);
+            }
+            if (data.aiEnemy) {
+                aiEnemy.position.x = data.aiEnemy.position.x;
+                aiEnemy.position.y = data.aiEnemy.position.y;
+                aiEnemy.position.z = data.aiEnemy.position.z;
+                aiEnemy.rotation.y = data.aiEnemy.rotationY;
             }
         });
     });
@@ -924,3 +939,9 @@ if (window.location.search.startsWith("?server=")) {
         // ...existing code...
     });
 }
+
+// Only run AI logic if host
+scene.onBeforeRenderObservable.add(() => {
+    // --- AI logic here ---
+    // (all your aiEnemy movement, FOV, chasing, roaming, etc)
+});
