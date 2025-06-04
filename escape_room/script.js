@@ -320,6 +320,226 @@ createItem("Gun", new BABYLON.Vector3(-2, 0.9, 1));
         }
     });
 
+    // Add a door (simple tall box)
+    const door = BABYLON.MeshBuilder.CreateBox("door", { width: 1, height: 2.2, depth: 0.15, faceUV: [] }, scene);
+    door.position = new BABYLON.Vector3(0, 1.1, -4); // Adjust position as needed
+    door.checkCollisions = true;
+
+    // Set the pivot to the left edge (for swinging)
+    door.setPivotPoint(new BABYLON.Vector3(-0.5, 0, 0)); // -0.5 is half the width to the left
+
+    // Create materials
+    const doorFrontMat = new BABYLON.StandardMaterial("doorFrontMat", scene);
+    doorFrontMat.diffuseTexture = new BABYLON.Texture("assets/textures/door_apartment_01.png", scene);
+    doorFrontMat.diffuseTexture.uAng = Math.PI;
+    doorFrontMat.diffuseTexture.uScale = -1;
+    doorFrontMat.diffuseTexture.vScale = 1;
+
+    const doorSideMat = new BABYLON.StandardMaterial("doorSideMat", scene);
+    doorSideMat.diffuseTexture = new BABYLON.Texture("assets/textures/door_apartment_02.png", scene);
+
+    // Create MultiMaterial and assign to mesh
+    const multiMat = new BABYLON.MultiMaterial("doorMultiMat", scene);
+    multiMat.subMaterials.push(doorFrontMat); // 0: front
+    multiMat.subMaterials.push(doorFrontMat); // 1: back
+    multiMat.subMaterials.push(doorSideMat);  // 2: right
+    multiMat.subMaterials.push(doorSideMat);  // 3: left
+    multiMat.subMaterials.push(doorSideMat);  // 4: top
+    multiMat.subMaterials.push(doorSideMat);  // 5: bottom
+    door.material = multiMat;
+
+    // Assign subMeshes for each face
+    door.subMeshes = [];
+    const verticesCount = door.getTotalVertices();
+    door.subMeshes.push(new BABYLON.SubMesh(0, 0, verticesCount, 0, 6, door));  // front
+    door.subMeshes.push(new BABYLON.SubMesh(1, 0, verticesCount, 6, 6, door));  // back
+    door.subMeshes.push(new BABYLON.SubMesh(2, 0, verticesCount, 12, 6, door)); // right
+    door.subMeshes.push(new BABYLON.SubMesh(3, 0, verticesCount, 18, 6, door)); // left
+    door.subMeshes.push(new BABYLON.SubMesh(4, 0, verticesCount, 24, 6, door)); // top
+    door.subMeshes.push(new BABYLON.SubMesh(5, 0, verticesCount, 30, 6, door)); // bottom
+
+    // Door open/close logic
+    let doorIsUnlocked = false;
+    let doorIsOpen = false;
+    const doorClosedRotation = 0;
+    const doorOpenRotation = -Math.PI / 2; // 90 degrees open
+
+    window.addEventListener("keydown", function(evt) {
+        if (evt.key.toLowerCase() === "e") {
+            const dist = BABYLON.Vector3.Distance(player.position, door.position);
+            if (dist < 2) {
+                if (!doorIsUnlocked) {
+                    // Unlock if holding key
+                    if (inventory[selectedSlot] === "Key") {
+                        doorIsUnlocked = true;
+                        // Remove key from inventory when used
+                        inventory[selectedSlot] = null;
+                        updateInventoryUI();
+                        // Optionally: show a message "Door unlocked!"
+                    } else {
+                        // Optionally: show a message "You need a key!"
+                    }
+                } else {
+                    // Toggle open/close
+                    doorIsOpen = !doorIsOpen;
+                    door.checkCollisions = !doorIsOpen;
+                    BABYLON.Animation.CreateAndStartAnimation(
+                        "toggleDoor", door, "rotation.y", 60, 20,
+                        door.rotation.y,
+                        doorIsOpen ? doorOpenRotation : doorClosedRotation,
+                        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+                    );
+                }
+            }
+        }
+    });
+
+    // --- AI ENEMY ---
+    // Create the AI enemy mesh
+    const aiEnemy = BABYLON.MeshBuilder.CreateCapsule("aiEnemy", { height: 1.5, radius: 0.4 }, scene);
+    aiEnemy.position = new BABYLON.Vector3(-6, 0.75, -6);
+    aiEnemy.material = new BABYLON.StandardMaterial("aiMat", scene);
+    aiEnemy.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Red
+    aiEnemy.checkCollisions = true;
+    aiEnemy.ellipsoid = new BABYLON.Vector3(0.4, 0.75, 0.4);
+
+    // AI parameters
+    const aiViewDistance = 6; // How far the AI can see
+    const aiViewAngle = Math.PI / 3; // 60 degrees field of view
+    const aiSpeed = 0.045; // Chasing speed
+
+    // FOV visualization mesh (hidden by default)
+    const fovMaterial = new BABYLON.StandardMaterial("fovMat", scene);
+    fovMaterial.alpha = 0.25;
+    fovMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
+    const fovMesh = BABYLON.MeshBuilder.CreateDisc("aiFOV", {
+        radius: aiViewDistance,
+        tessellation: 60,
+        arc: aiViewAngle / (2 * Math.PI)
+    }, scene);
+    fovMesh.material = fovMaterial;
+    fovMesh.isPickable = false;
+    fovMesh.isVisible = false;
+    fovMesh.rotation.x = Math.PI / 2;
+
+    // Show/hide FOV on X press
+    let fovVisible = false;
+    window.addEventListener("keydown", function(evt) {
+        if (evt.key.toLowerCase() === "x") {
+            fovVisible = !fovVisible;
+            fovMesh.isVisible = fovVisible;
+        }
+    });
+
+    // --- AI roaming state ---
+    let aiRoamTarget = null;
+    let aiRoamCooldown = 0;
+
+    scene.onBeforeRenderObservable.add(() => {
+        // Update FOV mesh position and rotation
+        fovMesh.position = aiEnemy.position.clone();
+        fovMesh.position.y += 0.01; // Slightly above ground
+        fovMesh.rotation.y = aiEnemy.rotation.y;
+
+        // Vector from AI to player
+        const toPlayer = player.position.subtract(aiEnemy.position);
+        const distance = toPlayer.length();
+
+        // AI's forward direction (assume facing along Z+ by default)
+        const aiForward = new BABYLON.Vector3(
+            Math.sin(aiEnemy.rotation.y),
+            0,
+            Math.cos(aiEnemy.rotation.y)
+        );
+
+        // Angle between AI's forward and direction to player
+        const angleToPlayer = BABYLON.Vector3.GetAngleBetweenVectors(
+            aiForward,
+            toPlayer.normalize(),
+            BABYLON.Vector3.Up()
+        );
+
+        let canSeePlayer = false;
+
+        // If player is within view distance and in front of AI
+        if (distance < aiViewDistance && Math.abs(angleToPlayer) < aiViewAngle / 2) {
+            // Raycast to check for obstacles between AI and player
+            const ray = new BABYLON.Ray(
+                aiEnemy.position.add(new BABYLON.Vector3(0, 0.75, 0)), // eye height
+                toPlayer.normalize(),
+                distance
+            );
+            const hit = scene.pickWithRay(ray, (mesh) => {
+                // Ignore the AI and the player themselves
+                return mesh !== aiEnemy && mesh !== player && mesh.isPickable !== false;
+            });
+
+            // Only chase if direct line of sight (no obstacle in the way)
+            if (!hit.hit || (hit.pickedMesh === player)) {
+                canSeePlayer = true;
+                // Rotate AI smoothly towards player
+                const targetY = Math.atan2(toPlayer.x, toPlayer.z);
+                let delta = targetY - aiEnemy.rotation.y;
+                delta = ((delta + Math.PI) % (2 * Math.PI)) - Math.PI;
+                aiEnemy.rotation.y += delta * 0.08;
+
+                // Move towards player
+                const moveVec = new BABYLON.Vector3(
+                    Math.sin(aiEnemy.rotation.y) * aiSpeed,
+                    0,
+                    Math.cos(aiEnemy.rotation.y) * aiSpeed
+                );
+                aiEnemy.moveWithCollisions(moveVec);
+
+                // Optional: If close enough, "catch" the player
+                if (distance < 1.2) {
+                    // You can trigger a game over or respawn here
+                    // alert("Caught by the AI!");
+                }
+            }
+        }
+
+        // --- Roaming logic if can't see player ---
+        if (!canSeePlayer) {
+            // If no roam target or reached it or cooldown expired, pick a new one
+            if (
+                !aiRoamTarget ||
+                BABYLON.Vector3.Distance(aiEnemy.position, aiRoamTarget) < 0.5 ||
+                aiRoamCooldown <= 0
+            ) {
+                // Pick a random point within a radius (e.g., 8 units) from the center
+                const roamRadius = 8;
+                let angle = Math.random() * Math.PI * 2;
+                let dist = 2 + Math.random() * (roamRadius - 2);
+                aiRoamTarget = new BABYLON.Vector3(
+                    Math.cos(angle) * dist,
+                    0.75,
+                    Math.sin(angle) * dist
+                );
+                aiRoamCooldown = 120 + Math.random() * 120; // frames until next roam (2-4s)
+            } else {
+                aiRoamCooldown--;
+            }
+
+            // Move toward roam target
+            const toTarget = aiRoamTarget.subtract(aiEnemy.position);
+            const targetY = Math.atan2(toTarget.x, toTarget.z);
+            let delta = targetY - aiEnemy.rotation.y;
+            delta = ((delta + Math.PI) % (2 * Math.PI)) - Math.PI;
+            aiEnemy.rotation.y += delta * 0.04; // slower turn when roaming
+
+            // Only move if not very close
+            if (toTarget.length() > 0.3) {
+                const moveVec = new BABYLON.Vector3(
+                    Math.sin(aiEnemy.rotation.y) * aiSpeed * 0.6, // slower speed when roaming
+                    0,
+                    Math.cos(aiEnemy.rotation.y) * aiSpeed * 0.6
+                );
+                aiEnemy.moveWithCollisions(moveVec);
+            }
+        }
+    });
+
     return { scene, player };
 };
 
