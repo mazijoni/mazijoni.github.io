@@ -74,6 +74,11 @@ const createScene = function () {
     cube.position = new BABYLON.Vector3(2, 0.5, 2); // Place it above ground
     cube.checkCollisions = true;
 
+    // Add texture to the cube
+    const cubeMaterial = new BABYLON.StandardMaterial("cubeMat", scene);
+    cubeMaterial.diffuseTexture = new BABYLON.Texture("assets/textures/box.jpg", scene);
+    cube.material = cubeMaterial;
+
     // Add a GLB model next to the cube
     BABYLON.SceneLoader.ImportMesh(
         null, // import all meshes
