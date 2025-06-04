@@ -540,11 +540,11 @@ createItem("Gun", new BABYLON.Vector3(-2, 0.9, 1));
         }
     });
 
-    return { scene, player };
+    return { scene, player, aiEnemy };
 };
 
 // Create the scene and player
-const { scene, player } = createScene();
+const { scene, player, aiEnemy } = createScene();
 
 // Render loop
 engine.runRenderLoop(() => {
