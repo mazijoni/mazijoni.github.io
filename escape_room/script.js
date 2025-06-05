@@ -434,7 +434,7 @@ createItem("Gun", new BABYLON.Vector3(-1, 0.1, 0));
     // --- AI ENEMY ---
     // Create the AI enemy mesh
     const aiEnemy = BABYLON.MeshBuilder.CreateCapsule("aiEnemy", { height: 1.5, radius: 0.4 }, scene);
-    aiEnemy.position = new BABYLON.Vector3(-6, 0.75, -6);
+    aiEnemy.position = new BABYLON.Vector3(3, 0.75, -4);
     aiEnemy.material = new BABYLON.StandardMaterial("aiMat", scene);
     aiEnemy.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Red
     aiEnemy.checkCollisions = true;
@@ -580,7 +580,7 @@ createItem("Gun", new BABYLON.Vector3(-1, 0.1, 0));
 //-------------------------------------------------------------------------------
     // Add collision boxes after scene is created
     addCollisionBox(scene, new BABYLON.Vector3(1.5, 0, -3.3), new BABYLON.Vector3(5, 5, .5));
-    addCollisionBox(scene, new BABYLON.Vector3(-3.2, 0, -3.3), new BABYLON.Vector3(2, 5, .5));
+    addCollisionBox(scene, new BABYLON.Vector3(-3.7, 0, -3.3), new BABYLON.Vector3(3, 5, .5));
     addCollisionBox(scene, new BABYLON.Vector3(-1.6, 2.4, -3.3), new BABYLON.Vector3(2, 1, .5));
     addCollisionBox(scene, new BABYLON.Vector3(-4, 0, 0), new BABYLON.Vector3(.5, 5, 6));
     addCollisionBox(scene, new BABYLON.Vector3(-3.2, 0, 3), new BABYLON.Vector3(2.5, 5, .5));
@@ -589,6 +589,14 @@ createItem("Gun", new BABYLON.Vector3(-1, 0.1, 0));
     addCollisionBox(scene, new BABYLON.Vector3(0, 0, 4), new BABYLON.Vector3(3, 5, .5));
     addCollisionBox(scene, new BABYLON.Vector3(2, 0, 3.5), new BABYLON.Vector3(1, 5, 1.5));
     addCollisionBox(scene, new BABYLON.Vector3(-2, 0, 3.5), new BABYLON.Vector3(1, 5, 1.5));
+    addCollisionBox(scene, new BABYLON.Vector3(-5.5, 0, -5), new BABYLON.Vector3(.5, 5, 5));
+    addCollisionBox(scene, new BABYLON.Vector3(10.5, 0, -5), new BABYLON.Vector3(.5, 5, 5));
+    addCollisionBox(scene, new BABYLON.Vector3(-1.5, 0, -6.2), new BABYLON.Vector3(9, 5, .5));
+    addCollisionBox(scene, new BABYLON.Vector3(7.3, 0, -6.2), new BABYLON.Vector3(6.5, 5, .5));
+    addCollisionBox(scene, new BABYLON.Vector3(3.5, 2.4, -6.2), new BABYLON.Vector3(2, 1, .5));
+    addCollisionBox(scene, new BABYLON.Vector3(5.5, 0, -3.3), new BABYLON.Vector3(3.7, 5, .5));
+    addCollisionBox(scene, new BABYLON.Vector3(10, 0, -3.3), new BABYLON.Vector3(3, 5, .5));
+    addCollisionBox(scene, new BABYLON.Vector3(8, 2.4, -3.3), new BABYLON.Vector3(2, 1, .5));
     enableCollisionBoxToggle();
 //-------------------------------------------------------------------------------
     return { scene, player, aiEnemy };
