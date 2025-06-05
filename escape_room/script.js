@@ -1,3 +1,5 @@
+import { addCollisionBox, enableCollisionBoxToggle } from './collision.js'; // <-- Add this at the very top
+
 // Initialize the Babylon.js engine and create a scene
 const canvas = document.getElementById("renderCanvas");
 canvas.style.width = "100vw";
@@ -63,10 +65,17 @@ const createScene = function () {
 
     // Apply texture to the ground
     const groundMaterial = new BABYLON.StandardMaterial("groundMat", scene);
-    groundMaterial.diffuseTexture = new BABYLON.Texture("assets/textures/texture_purple.png", scene);
-    // Downscale the texture (repeat it more times)
-    groundMaterial.diffuseTexture.uScale = 4;
-    groundMaterial.diffuseTexture.vScale = 4;
+    groundMaterial.diffuseTexture = new BABYLON.Texture(
+        "assets/textures/planks.png",
+        scene,
+        true, // disable mipmaps!
+        false,
+        BABYLON.Texture.NEAREST_SAMPLINGMODE
+    );
+    groundMaterial.diffuseTexture.wrapU = BABYLON.Texture.WRAP_ADDRESSMODE;
+    groundMaterial.diffuseTexture.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
+    groundMaterial.diffuseTexture.uScale = 8;
+    groundMaterial.diffuseTexture.vScale = 8;
     ground.material = groundMaterial;
 
     // Add a cube
@@ -83,14 +92,15 @@ const createScene = function () {
     BABYLON.SceneLoader.ImportMesh(
         null, // import all meshes
         "assets/", // path to the model (adjust if needed)
-        "test.glb", // filename (replace with your actual GLB file name)
+        "map.glb", // filename (replace with your actual GLB file name)
         scene,
         function (meshes) {
             // Position the imported model next to the cube
             meshes.forEach(mesh => {
-                mesh.position = new BABYLON.Vector3(-5, 0, 5); // Adjust as needed
-                mesh.scaling = new BABYLON.Vector3(.5, .5, .5); // Adjust scale if needed
-                mesh.checkCollisions = true;
+                mesh.position = new BABYLON.Vector3(0, .5, 0); // Adjust as needed
+                mesh.scaling = new BABYLON.Vector3(1.7, 1.7, 1.7); // Adjust scale if needed
+                mesh.rotation = new BABYLON.Vector3(0, Math.PI / -4, 0); // Rotate 45 degrees around Y axis
+                mesh.checkCollisions = false;
             });
         }
     );
@@ -326,8 +336,8 @@ createItem("Gun", new BABYLON.Vector3(-2, 0.9, 1));
     });
 
     // Add a door (simple tall box)
-    const door = BABYLON.MeshBuilder.CreateBox("door", { width: 1, height: 2.2, depth: 0.15, faceUV: [] }, scene);
-    door.position = new BABYLON.Vector3(0, 1.1, -4); // Adjust position as needed
+    const door = BABYLON.MeshBuilder.CreateBox("door", { width: 1, height: 1.6, depth: 0.15, faceUV: [] }, scene);
+    door.position = new BABYLON.Vector3(-1.6, 0.7, -3.2); // Adjust position as needed
     door.checkCollisions = true;
 
     // Set the pivot to the left edge (for swinging)
@@ -545,7 +555,13 @@ createItem("Gun", new BABYLON.Vector3(-2, 0.9, 1));
             }
         }
     });
-
+//-------------------------------------------------------------------------------
+    // Add collision boxes after scene is created
+    addCollisionBox(scene, new BABYLON.Vector3(1.5, 0, -3.5), new BABYLON.Vector3(5, 5, 1));
+    addCollisionBox(scene, new BABYLON.Vector3(-3.2, 0, -3.5), new BABYLON.Vector3(2, 5, 1));
+    addCollisionBox(scene, new BABYLON.Vector3(-1.6, 2.1, -3.5), new BABYLON.Vector3(2, 1, 1));
+    enableCollisionBoxToggle();
+//-------------------------------------------------------------------------------
     return { scene, player, aiEnemy };
 };
 
