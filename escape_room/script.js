@@ -585,7 +585,7 @@ createItem("Gun", new BABYLON.Vector3(-1, 0.1, 0));
     addCollisionBox(scene, new BABYLON.Vector3(-4, 0, 0), new BABYLON.Vector3(.5, 5, 6));
     addCollisionBox(scene, new BABYLON.Vector3(-3.2, 0, 3), new BABYLON.Vector3(2.5, 5, .5));
     addCollisionBox(scene, new BABYLON.Vector3(2.8, 0, 3), new BABYLON.Vector3(2, 5, .5));
-    addCollisionBox(scene, new BABYLON.Vector3(3.8, 0, 0), new BABYLON.Vector3(.5, 5, 6));
+    addCollisionBox(scene, new BABYLON.Vector3(3.9, 0, 0), new BABYLON.Vector3(.5, 5, 6));
     addCollisionBox(scene, new BABYLON.Vector3(0, 0, 4), new BABYLON.Vector3(3, 5, .5));
     addCollisionBox(scene, new BABYLON.Vector3(2, 0, 3.5), new BABYLON.Vector3(1, 5, 1.5));
     addCollisionBox(scene, new BABYLON.Vector3(-2, 0, 3.5), new BABYLON.Vector3(1, 5, 1.5));
