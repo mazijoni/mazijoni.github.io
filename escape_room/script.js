@@ -712,7 +712,7 @@ createItem("Key", new BABYLON.Vector3(8, 1, -.5));
     const triggerZone = BABYLON.MeshBuilder.CreateBox("triggerZone", { size: 1 }, scene);
     triggerZone.position = new BABYLON.Vector3(4.5, 1, -14);
     triggerZone.scaling = new BABYLON.Vector3(2, 2, 0.5);
-    triggerZone.isVisible = true;
+    triggerZone.isVisible = false;
     triggerZone.isPickable = false;
     triggerZone.checkCollisions = false;
 
