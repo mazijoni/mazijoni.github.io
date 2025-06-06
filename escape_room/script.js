@@ -27,9 +27,9 @@ const createScene = function () {
     }, scene);
     player.position.y = 0.75;
 
-    // Give the player the planks.png texture
+    // Give the player the player.png texture
     const playerMaterial = new BABYLON.StandardMaterial("playerMat", scene);
-    playerMaterial.diffuseTexture = new BABYLON.Texture("assets/textures/texture_wall_purple.png", scene);
+    playerMaterial.diffuseTexture = new BABYLON.Texture("assets/textures/player.png", scene);
     player.material = playerMaterial;
 
     // Enable collisions for the player and set ellipsoid
@@ -92,6 +92,22 @@ const createScene = function () {
     const cubeMaterial = new BABYLON.StandardMaterial("cubeMat", scene);
     cubeMaterial.diffuseTexture = new BABYLON.Texture("assets/textures/box.jpg", scene);
     cube.material = cubeMaterial;
+
+    // Add more cubes with the same texture
+    const cube2 = BABYLON.MeshBuilder.CreateBox("cube2", { size: 1 }, scene);
+    cube2.position = new BABYLON.Vector3(-2, 0.5, -1);
+    cube2.checkCollisions = true;
+    cube2.material = cubeMaterial;
+
+    const cube3 = BABYLON.MeshBuilder.CreateBox("cube3", { size: 1 }, scene);
+    cube3.position = new BABYLON.Vector3(8, 0.5, -.5);
+    cube3.checkCollisions = true;
+    cube3.material = cubeMaterial;
+
+    const cube4 = BABYLON.MeshBuilder.CreateBox("cube4", { size: 1 }, scene);
+    cube4.position = new BABYLON.Vector3(6, 0.5, -10);
+    cube4.checkCollisions = true;
+    cube4.material = cubeMaterial;
 
     // Add a GLB model Map
     BABYLON.SceneLoader.ImportMesh(
@@ -276,16 +292,12 @@ function createItem(name, position) {
     const item = BABYLON.MeshBuilder.CreateBox(name, { size: 0.3 }, scene);
     item.position = position.clone();
     item.material = new BABYLON.StandardMaterial(name + "Mat", scene);
-    if (name === "C4") {
-        item.material.diffuseColor = new BABYLON.Color3(0, 0.8, 0); // Green for C4
-    } else {
-        item.material.diffuseColor = new BABYLON.Color3(1, 1, 0); // Yellow for others
-    }
+    item.material.diffuseColor = new BABYLON.Color3(1, 1, 0); // Yellow for Key
     item.itemName = name; // Store name for inventory
     items.push(item);
 }
-createItem("Key", new BABYLON.Vector3(1, 0.1, 0));
-createItem("C4", new BABYLON.Vector3(-1, 0.1, 0)); // Renamed from "Gun" to "C4"
+createItem("Key", new BABYLON.Vector3(2, 1, 2));
+createItem("Key", new BABYLON.Vector3(8, 1, -.5));
 
     scene.onBeforeRenderObservable.add(() => {
         // ...existing movement code...
@@ -471,7 +483,7 @@ createItem("C4", new BABYLON.Vector3(-1, 0.1, 0)); // Renamed from "Gun" to "C4"
     door3.setPivotPoint(new BABYLON.Vector3(-0.5, 0, 0));
     door3.material = multiMat; // Reuse material or create new if you want different textures
 
-    let door3IsUnlocked = true; // Already unlocked
+    let door3IsUnlocked = false; // Now locked by default
     let door3IsOpen = false;
     const door3ClosedRotation = 0;
     const door3OpenRotation = -Math.PI / 2;
@@ -480,15 +492,27 @@ createItem("C4", new BABYLON.Vector3(-1, 0.1, 0)); // Renamed from "Gun" to "C4"
         if (evt.key.toLowerCase() === "e") {
             const dist = BABYLON.Vector3.Distance(player.position, door3.position);
             if (dist < 2) {
-                // Remove lock check: always allow open/close
-                door3IsOpen = !door3IsOpen;
-                door3.checkCollisions = !door3IsOpen;
-                BABYLON.Animation.CreateAndStartAnimation(
-                    "toggleDoor3", door3, "rotation.y", 60, 20,
-                    door3.rotation.y,
-                    door3IsOpen ? door3OpenRotation : door3ClosedRotation,
-                    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-                );
+                if (!door3IsUnlocked) {
+                    // Unlock if holding key
+                    if (inventory[selectedSlot] === "Key") {
+                        door3IsUnlocked = true;
+                        inventory[selectedSlot] = null;
+                        updateInventoryUI();
+                        // Optionally: show a message "Door unlocked!"
+                    } else {
+                        // Optionally: show a message "You need a key!"
+                    }
+                } else {
+                    // Toggle open/close
+                    door3IsOpen = !door3IsOpen;
+                    door3.checkCollisions = !door3IsOpen;
+                    BABYLON.Animation.CreateAndStartAnimation(
+                        "toggleDoor3", door3, "rotation.y", 60, 20,
+                        door3.rotation.y,
+                        door3IsOpen ? door3OpenRotation : door3ClosedRotation,
+                        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+                    );
+                }
             }
         }
     });
@@ -497,8 +521,12 @@ createItem("C4", new BABYLON.Vector3(-1, 0.1, 0)); // Renamed from "Gun" to "C4"
     // Create the AI enemy mesh
     const aiEnemy = BABYLON.MeshBuilder.CreateCapsule("aiEnemy", { height: 1.5, radius: 0.4 }, scene);
     aiEnemy.position = new BABYLON.Vector3(3, 0.75, -4);
-    aiEnemy.material = new BABYLON.StandardMaterial("aiMat", scene);
-    aiEnemy.material.diffuseColor = new BABYLON.Color3(1, 0, 0); // Red
+
+    // Add texture to the enemy
+    const aiEnemyMaterial = new BABYLON.StandardMaterial("aiMat", scene);
+    aiEnemyMaterial.diffuseTexture = new BABYLON.Texture("assets/textures/enemy.png", scene);
+    aiEnemy.material = aiEnemyMaterial;
+
     aiEnemy.checkCollisions = true;
     aiEnemy.ellipsoid = new BABYLON.Vector3(0.4, 0.75, 0.4);
 
@@ -593,8 +621,29 @@ createItem("C4", new BABYLON.Vector3(-1, 0.1, 0)); // Renamed from "Gun" to "C4"
 
                 // Optional: If close enough, "catch" the player
                 if (distance < 1.2) {
-                    // You can trigger a game over or respawn here
-                    // alert("Caught by the AI!");
+                    // Show GIF overlay
+                    if (!document.getElementById("gameOverGif")) {
+                        const gif = document.createElement("img");
+                        gif.id = "gameOverGif";
+                        gif.src = "assets/gameover.gif"; // <-- Place your GIF in assets/ and use correct filename
+                        gif.style.position = "fixed";
+                        gif.style.top = "0";
+                        gif.style.left = "0";
+                        gif.style.width = "100vw";
+                        gif.style.height = "100vh";
+                        gif.style.objectFit = "cover";
+                        gif.style.zIndex = "9999";
+                        document.body.appendChild(gif);
+
+                        // Optionally remove the GIF after a few seconds
+                        setTimeout(() => {
+                            gif.remove();
+                            location.reload();
+                            // location.reload();
+                        }, 3000); // Show for 3 seconds
+                    }
+                    // Optionally, stop AI movement or further checks here
+                    // return; // Uncomment to stop further logic after GIF shows
                 }
             }
         }
@@ -659,6 +708,49 @@ createItem("C4", new BABYLON.Vector3(-1, 0.1, 0)); // Renamed from "Gun" to "C4"
     addCollisionBox(scene, new BABYLON.Vector3(5.5, 0, -3.3), new BABYLON.Vector3(3.7, 5, .5));
     addCollisionBox(scene, new BABYLON.Vector3(10, 0, -3.3), new BABYLON.Vector3(3, 5, .5));
     addCollisionBox(scene, new BABYLON.Vector3(8, 2.4, -3.3), new BABYLON.Vector3(2, 1, .5));
+    // Create a trigger zone (invisible box, no collisions)
+    const triggerZone = BABYLON.MeshBuilder.CreateBox("triggerZone", { size: 1 }, scene);
+    triggerZone.position = new BABYLON.Vector3(4.5, 1, -14);
+    triggerZone.scaling = new BABYLON.Vector3(2, 2, 0.5);
+    triggerZone.isVisible = true;
+    triggerZone.isPickable = false;
+    triggerZone.checkCollisions = false;
+
+    // Example: When player enters the trigger zone, show a message (once)
+    let triggerActivated = false;
+    let triggerReady = false; // Add this flag
+    // Wait until player leaves the trigger zone before enabling it
+    scene.onBeforeRenderObservable.add(() => {
+        const inTrigger = BABYLON.BoundingBox.Intersects(
+            triggerZone.getBoundingInfo().boundingBox,
+            player.getBoundingInfo().boundingBox
+        );
+        if (!triggerReady && !inTrigger) {
+            triggerReady = true; // Now allow activation
+        }
+        if (triggerReady && !triggerActivated && inTrigger) {
+            triggerActivated = true;
+            // Show a "You Win!" screen using Babylon GUI
+            const winUI = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("winUI");
+            const rect = new BABYLON.GUI.Rectangle();
+            rect.width = "400px";
+            rect.height = "200px";
+            rect.cornerRadius = 20;
+            rect.color = "white";
+            rect.thickness = 4;
+            rect.background = "rgba(0,0,0,0.85)";
+            winUI.addControl(rect);
+
+            const text = new BABYLON.GUI.TextBlock();
+            text.text = "YOU WIN!";
+            text.color = "Green";
+            text.fontSize = 64;
+            text.fontWeight = "bold";
+            text.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+            text.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+            rect.addControl(text);
+        }
+    });
     enableCollisionBoxToggle();
 //-------------------------------------------------------------------------------
     return { scene, player, aiEnemy };
