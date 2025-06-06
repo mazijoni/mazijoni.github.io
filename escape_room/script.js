@@ -64,7 +64,7 @@ const createScene = function () {
     const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
 
     // Add a ground with texture
-    const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 20, height: 20 }, scene);
+    const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 40, height: 40 }, scene);
     ground.position.y = 0;
     ground.checkCollisions = true;
 
@@ -79,8 +79,8 @@ const createScene = function () {
     );
     groundMaterial.diffuseTexture.wrapU = BABYLON.Texture.WRAP_ADDRESSMODE;
     groundMaterial.diffuseTexture.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
-    groundMaterial.diffuseTexture.uScale = 8;
-    groundMaterial.diffuseTexture.vScale = 8;
+    groundMaterial.diffuseTexture.uScale = 25;
+    groundMaterial.diffuseTexture.vScale = 25;
     ground.material = groundMaterial;
 
     // Add a cube
@@ -119,7 +119,7 @@ const createScene = function () {
         function (meshes) {
             // Position the imported model next to the cube
             meshes.forEach(mesh => {
-                mesh.position = new BABYLON.Vector3(0, .62, 0); // Adjust as needed
+                mesh.position = new BABYLON.Vector3(0, .6, 0); // Adjust as needed
                 mesh.scaling = new BABYLON.Vector3(1.7, 1.7, 1.7); // Adjust scale if needed
                 mesh.rotation = new BABYLON.Vector3(0, Math.PI / -4, 0); // Rotate 45 degrees around Y axis
                 mesh.checkCollisions = false;
@@ -357,7 +357,7 @@ createItem("Gun", new BABYLON.Vector3(-1, 0.1, 0));
         }
     });
 
-    // Add a door (simple tall box)
+    // --- First Door (existing) ---
     const door = BABYLON.MeshBuilder.CreateBox("door", { width: .9, height: 2, depth: 0.15, faceUV: [] }, scene);
     door.position = new BABYLON.Vector3(-1.6, 0.7, -3.2); // Adjust position as needed
     door.checkCollisions = true;
@@ -427,6 +427,64 @@ createItem("Gun", new BABYLON.Vector3(-1, 0.1, 0));
                         BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
                     );
                 }
+            }
+        }
+    });
+
+    // --- Second Door ---
+    const door2 = BABYLON.MeshBuilder.CreateBox("door2", { width: .9, height: 2, depth: 0.15, faceUV: [] }, scene);
+    door2.position = new BABYLON.Vector3(8, 0.7, -3.2); // Change position as needed
+    door2.checkCollisions = true;
+    door2.setPivotPoint(new BABYLON.Vector3(-0.5, 0, 0));
+    door2.material = multiMat; // Reuse material or create new if you want different textures
+
+    let door2IsUnlocked = true; // Already unlocked
+    let door2IsOpen = false;
+    const door2ClosedRotation = 0;
+    const door2OpenRotation = -Math.PI / 2;
+
+    window.addEventListener("keydown", function(evt) {
+        if (evt.key.toLowerCase() === "e") {
+            const dist = BABYLON.Vector3.Distance(player.position, door2.position);
+            if (dist < 2) {
+                // Remove lock check: always allow open/close
+                door2IsOpen = !door2IsOpen;
+                door2.checkCollisions = !door2IsOpen;
+                BABYLON.Animation.CreateAndStartAnimation(
+                    "toggleDoor2", door2, "rotation.y", 60, 20,
+                    door2.rotation.y,
+                    door2IsOpen ? door2OpenRotation : door2ClosedRotation,
+                    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+                );
+            }
+        }
+    });
+
+    // --- Third Door ---
+    const door3 = BABYLON.MeshBuilder.CreateBox("door3", { width: .9, height: 2, depth: 0.15, faceUV: [] }, scene);
+    door3.position = new BABYLON.Vector3(3.55, 0.7, -6.2); // Change position as needed
+    door3.checkCollisions = true;
+    door3.setPivotPoint(new BABYLON.Vector3(-0.5, 0, 0));
+    door3.material = multiMat; // Reuse material or create new if you want different textures
+
+    let door3IsUnlocked = true; // Already unlocked
+    let door3IsOpen = false;
+    const door3ClosedRotation = 0;
+    const door3OpenRotation = -Math.PI / 2;
+
+    window.addEventListener("keydown", function(evt) {
+        if (evt.key.toLowerCase() === "e") {
+            const dist = BABYLON.Vector3.Distance(player.position, door3.position);
+            if (dist < 2) {
+                // Remove lock check: always allow open/close
+                door3IsOpen = !door3IsOpen;
+                door3.checkCollisions = !door3IsOpen;
+                BABYLON.Animation.CreateAndStartAnimation(
+                    "toggleDoor3", door3, "rotation.y", 60, 20,
+                    door3.rotation.y,
+                    door3IsOpen ? door3OpenRotation : door3ClosedRotation,
+                    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+                );
             }
         }
     });
