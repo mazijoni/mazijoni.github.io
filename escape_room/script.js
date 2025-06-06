@@ -276,12 +276,16 @@ function createItem(name, position) {
     const item = BABYLON.MeshBuilder.CreateBox(name, { size: 0.3 }, scene);
     item.position = position.clone();
     item.material = new BABYLON.StandardMaterial(name + "Mat", scene);
-    item.material.diffuseColor = new BABYLON.Color3(1, 1, 0); // Yellow
+    if (name === "C4") {
+        item.material.diffuseColor = new BABYLON.Color3(0, 0.8, 0); // Green for C4
+    } else {
+        item.material.diffuseColor = new BABYLON.Color3(1, 1, 0); // Yellow for others
+    }
     item.itemName = name; // Store name for inventory
     items.push(item);
 }
 createItem("Key", new BABYLON.Vector3(1, 0.1, 0));
-createItem("Gun", new BABYLON.Vector3(-1, 0.1, 0));
+createItem("C4", new BABYLON.Vector3(-1, 0.1, 0)); // Renamed from "Gun" to "C4"
 
     scene.onBeforeRenderObservable.add(() => {
         // ...existing movement code...
@@ -1020,39 +1024,28 @@ updateRoomInfoUI();
 // Call after any player joins/leaves or nickname changes
 // For host:
 if (window.location.search.startsWith("?server=")) {
-    // ...existing code...
     peer.on('connection', (conn) => {
-        // ...existing code...
         conn.on("data", (data) => {
-            // ...existing code...
             if (data.nickname) {
-                // ...existing code...
                 setTimeout(updateRoomInfoUI, 100); // update after nickname set
                 return;
             }
-            // ...existing code...
         });
         conn.on('close', () => {
             setTimeout(updateRoomInfoUI, 100);
-            // ...existing code...
         });
     });
-    // ...existing code...
     scene.onBeforeRenderObservable.add(() => {
         updateRoomInfoUI();
-        // ...existing code...
     });
 } else if (window.location.search.startsWith("?join=")) {
-    // ...existing code...
+
     peer.on('open', (id) => {
-        // ...existing code...
         serverConn.on("data", (data) => {
-            // ...existing code...
             setTimeout(updateRoomInfoUI, 100);
         });
     });
     scene.onBeforeRenderObservable.add(() => {
         updateRoomInfoUI();
-        // ...existing code...
     });
 }
